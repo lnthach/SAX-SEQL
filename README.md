@@ -22,6 +22,7 @@ make
 
 1. Train using ./seql_learn
   Usage:
+```
     ./seql_learn    [-o objective_function] [-m minsup] [-l minpat] [-L maxpat] [-g maxgap] [-r traversal_strategy ]
                     [-T #round] [-n token_type] [-c convergence_threshold] [-C regularizer_value] [-a l1_vs_l2_regularizer_weight]
                     [-v verbosity] train_file model_file
@@ -50,30 +51,45 @@ make
      change in score predictions.
     [-v verbosity: 1 to 5] Amount of printed detail about the training of the classifier. By default set to 1
      (light profiling information).
-
+```
       
     Example call for char-token representation: (all other parameters set to their default values):
+```
     ./seql_learn -n 1 -v 2 data/toy.char.train toy.seql.char.model
+```
 
 2. Prepare the final model using ./seql_mkmodel (this builds a trie on the features of the model for fast classification).
-    Usage: ./seql_mkmodel [-i model_file] [-o binary_model_file] [-O predictors_file]
+    Usage:
+```
+./seql_mkmodel [-i model_file] [-o binary_model_file] [-O predictors_file]
+```
    
     Example call:
-  ./seql_mkmodel -i toy.seql.char.model -o toy.seql.char.model.bin -O toy.seql.char.model.predictors
+```
+./seql_mkmodel -i toy.seql.char.model -o toy.seql.char.model.bin -O toy.seql.char.model.predictors
+```
 
 3. Classify using ./seql_classify (apply the learned model on new examples).
-    Usage:  ./seql_classify [-n token_type: 0 word tokens, 1 char tokens; by default set to 1] [-t classif_threshold: default 0] [-v verbosity level: default 0] test_file binary_model_file
+    Usage:
+```
+./seql_classify [-n token_type: 0 word tokens, 1 char tokens; by default set to 1] [-t classif_threshold: default 0] [-v verbosity level: default 0] test_file binary_model_file
+```
 
     Example call:
-    ./seql_classify -n 1 -v 2 data/toy.char.test toy.seql.char.model.bin
-
+```
+./seql_classify -n 1 -v 2 data/toy.char.test toy.seql.char.model.bin
+```
 Optionally one can tune the classification threshold on the training set, to minimize the number of training errors:
+```
   ./seql_classify_tune_threshold_min_errors -n 1 -v 2 data/toy.char.train toy.seql.char.model.bin
 
     Best threshold:0.0746284
+```
 
 and use the best theshold for classifying the test set:
+```
   ./seql_classify -n 1 -t 0.0746284 -v 2 data/toy.char.test toy.seql.char.model.bin
+```
 
 
 ## References
