@@ -1,6 +1,6 @@
 ## Description
 
-
+This page describes the usage of the SAX-SEQL software.
 
 ## Installation
 
@@ -23,11 +23,11 @@ make
 1. Train using ./seql_learn
   Usage:
 ```
-    ./seql_learn    [-o objective_function] [-m minsup] [-l minpat] [-L maxpat] [-g maxgap] [-r traversal_strategy ]
-                    [-T #round] [-n token_type] [-c convergence_threshold] [-C regularizer_value] [-a l1_vs_l2_regularizer_weight]
-                    [-v verbosity] train_file model_file
+./seql_learn    [-o objective_function] [-m minsup] [-l minpat] [-L maxpat] [-g maxgap] [-r traversal_strategy ]
+                [-T #round] [-n token_type] [-c convergence_threshold] [-C regularizer_value] [-a l1_vs_l2_regularizer_weight]
+                [-v verbosity] train_file model_file
 
-  Default values for parameters:
+Default values for parameters:
     [-o objective: 0 or 2] Objective function. Choice between logistic regression (-o 0) and squared-hinge support vector ma-
      chines (-o 2). By default set to logistic regression.
     [-g maxgap >= 0] Maximum number of consecutive gaps or wildcards allowed in a feature, e.g., a**b,
@@ -55,7 +55,7 @@ make
       
     Example call for char-token representation: (all other parameters set to their default values):
 ```
-    ./seql_learn -n 1 -v 2 data/toy.char.train toy.seql.char.model
+./seql_learn -n 1 -v 2 data/toy.char.train toy.seql.char.model
 ```
 
 2. Prepare the final model using ./seql_mkmodel (this builds a trie on the features of the model for fast classification).
