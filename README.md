@@ -57,10 +57,6 @@ Default values for parameters:
      (light profiling information).
 ```
       
-    Example call for char-token representation: (all other parameters set to their default values):
-```
-./seql_learn -n 1 -v 2 data/toy.char.train toy.seql.char.model
-```
 
 3. Prepare the final model using ./seql_mkmodel (this builds a trie on the features of the model for fast classification).
     Usage:
@@ -77,17 +73,23 @@ Default values for parameters:
 
 ## Example
 
+```
+./sax_convert -n 0 -s 1 -N 60 -w 16 -a 4  -i data/Coffee_TRAIN -o sax.train -I data/Coffee_TEST -O sax.test
+./seql_learn -n 1 -v 1 -A 4 -d 1 sax.train seql.model
+./seql_mkmodel -i seql.model -o seql.model.bin -O seql.predictor
+./seql_classify -n 1 -v 0 -p seql.predictor -d 1 sax.test seql.model.bin
+```
 
 Optionally one can tune the classification threshold on the training set, to minimize the number of training errors:
 ```
-  ./seql_classify_tune_threshold_min_errors -n 1 -v 2 data/toy.char.train toy.seql.char.model.bin
+ ./seql_classify_tune_threshold_min_errors -n 1 -v 2 data/sax.train seql.model.bin
 
     Best threshold:0.0746284
 ```
 
 and use the best theshold for classifying the test set:
 ```
-  ./seql_classify -n 1 -t 0.0746284 -v 2 data/toy.char.test toy.seql.char.model.bin
+./seql_classify -n 1 -v 0 -t 0.0746284 -p seql.predictor -d 1 sax.test seql.model.bin
 ```
 
 
