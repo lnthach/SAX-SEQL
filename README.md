@@ -18,9 +18,13 @@ make
 
 ## How to Use
 
+1. Convert time series data to SAX
+  Usage:
+ ```
+ ./sax_convert [-n token_type] [-s reduction_strategy] [-N window_size] [-w word_length] [-a alphabet_size] [-i train_input] [-o train_output] [-I test_input] [-O test_output]
+ ```
 
-
-1. Train using ./seql_learn
+2. Train using ./seql_learn
   Usage:
 ```
 ./seql_learn    [-o objective_function] [-m minsup] [-l minpat] [-L maxpat] [-g maxgap] [-r traversal_strategy ]
@@ -58,27 +62,22 @@ Default values for parameters:
 ./seql_learn -n 1 -v 2 data/toy.char.train toy.seql.char.model
 ```
 
-2. Prepare the final model using ./seql_mkmodel (this builds a trie on the features of the model for fast classification).
+3. Prepare the final model using ./seql_mkmodel (this builds a trie on the features of the model for fast classification).
     Usage:
 ```
 ./seql_mkmodel [-i model_file] [-o binary_model_file] [-O predictors_file]
 ```
    
-    Example call:
-```
-./seql_mkmodel -i toy.seql.char.model -o toy.seql.char.model.bin -O toy.seql.char.model.predictors
-```
 
-3. Classify using ./seql_classify (apply the learned model on new examples).
+4. Classify using ./seql_classify (apply the learned model on new examples).
     Usage:
 ```
 ./seql_classify [-n token_type: 0 word tokens, 1 char tokens; by default set to 1] [-t classif_threshold: default 0] [-v verbosity level: default 0] test_file binary_model_file
 ```
 
-    Example call:
-```
-./seql_classify -n 1 -v 2 data/toy.char.test toy.seql.char.model.bin
-```
+## Example
+
+
 Optionally one can tune the classification threshold on the training set, to minimize the number of training errors:
 ```
   ./seql_classify_tune_threshold_min_errors -n 1 -v 2 data/toy.char.train toy.seql.char.model.bin
