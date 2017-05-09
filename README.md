@@ -1,6 +1,10 @@
 ## Description
 
-This page describes the usage of the SAX-SEQL software.
+This page describes the usage of the SAX-SEQL software and supports our publication:
+
+Time Series Classification by Sequence Learning in All-Subsequence Space, ICDE 2017 IEEE International Conference on Data Engineering, San Diego, Thach Le Nguyen, [Severin Gsponer](svgsponer.github.io), [Georgiana Ifrim](https://github.com/heerme) (Insight Centre for Data Analytics - University College Dublin)
+
+The original SEQL software can be found here: https://github.com/heerme/seql-sequence-learner
 
 ## Installation
 
@@ -93,6 +97,9 @@ and use the best theshold for classifying the test set:
 ```
 
 
-## References
 
-Time Series Classification by Sequence Learning in All-Subsequence Space, ICDE 2017 IEEE International Conference on Data Engineering, San Diego, Thach Le Nguyen, Severin Gsponer, Georgiana Ifrim (Insight Centre for Data Analytics - University College Dublin)
+
+
+
+
+
