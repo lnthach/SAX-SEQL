@@ -3,7 +3,18 @@
  *
  *  Created on: 27 Jun 2016
  *      Author: LE NGUYEN THACH
+ * Descriptions of parameters:
+ * [-i input] (Input of time series data)
+ * [-o output] (Output of SAX data)
+ * [-N window_size] (Size of the sliding window)
+ * [-w word_length] (length of SAX word)
+ * [-a alphabet_size] (Size of the alphabet)
+ * [-n no_window] (Set window_size with length of input time series. Ignore window_size parameter.)
+ * [-s reduction_strategy] 0 - No reduction
+ * 						   1 - No identical consecutive words.
+ * 						   2 - Unique word only
  */
+
 
 #include "sax_converter.h"
 #include <stdlib.h>
@@ -14,11 +25,6 @@
 using namespace std;
 
 int main(int argc, char **argv){
-	//	if (argc != 6) {
-	//		std::cout << "Invalid Arguments." << std::endl;
-	//		return 0;
-	//	}
-	// extern char *optarg;
 
 	int window_size = 20;
 	int word_length = 4;
@@ -32,22 +38,22 @@ int main(int argc, char **argv){
 	int reduction_strategy = 2;
 
 
-	string input;
-	string test_input;
-	string output;
-	string test_output;
+	string train_input = "";
+	string test_input = "";
+	string train_output = "";
+	string test_output = "";
 
 	int opt;
 	while ((opt = getopt(argc, argv, "I:i:O:o:N:w:a:n:s:t:")) != -1) {
 		switch(opt) {
+		case 'i':
+			train_input = string (optarg);
+			break;
 		case 'I':
 			test_input = string (optarg);
 			break;
-		case 'i':
-			input = string (optarg);
-			break;
 		case 'o':
-			output = string(optarg);
+			train_output = string(optarg);
 			break;
 		case 'O':
 			test_output = string(optarg);
@@ -96,94 +102,52 @@ int main(int argc, char **argv){
 	string label;
 	string sax_str;
 
-	// obj->compute_PAA_equidepth_break_points_from_file(input,del);
 
-	std::ifstream myfile (input);
-	std::ofstream outfile (output);
+	// convert train data
+	if (!(train_input.empty() || train_output.empty()) ){
+		std::ifstream myfile (train_input);
+		std::ofstream outfile (train_output);
 
-	bool trained_break_points = false;
+		bool trained_break_points = false;
 
-	if (myfile.is_open() && outfile.is_open()){
-		while (getline (myfile, line)){
-			pos = line.find(del);
-			label = line.substr(0, pos);
-			line.erase(0, pos + del.length());
-			sax_str = obj->timeseries2SAX(line,del);
-			outfile << label << " " << sax_str << '\n';
+		if (myfile.is_open() && outfile.is_open()){
+			while (getline (myfile, line)){
+				pos = line.find(del);
+				label = line.substr(0, pos);
+				line.erase(0, pos + del.length());
+				sax_str = obj->timeseries2SAX(line,del);
+				outfile << label << " " << sax_str << '\n';
 
 
+			}
+			myfile.close();
+			outfile.close();
+		} else {
+			if (!myfile.is_open())	std::cout << "Invalid Timeseries Data Input." << std::endl;
+			if (!outfile.is_open())	std::cout << "Invalid output for SAX." << std::endl;
+			return false;
 		}
-		myfile.close();
-		outfile.close();
-	} else {
-		if (!myfile.is_open())	std::cout << "Invalid Timeseries Data Input." << std::endl;
-		if (!outfile.is_open())	std::cout << "Invalid output for SAX." << std::endl;
-		return false;
 	}
 
+	// convert test data
+	if (!(test_input.empty() || test_output.empty()) ){
+		std::ifstream test_myfile (test_input);
+		std::ofstream test_outfile (test_output);
 
-	//	if (myfile.is_open() && outfile.is_open()){
-	//		while (myfile.getline (line, 100000)){
-	//			char *timeseries = std::strchr(line,*del)+1;
-	//
-	//			char *label = (char*) malloc(timeseries - line);
-	//			std::strncpy(label,line,timeseries-line-1);
-	//			label[timeseries - line-1] = '\0';
-	//
-	//
-	//			char *sax_str;
-	//			if (!trained_break_points){
-	//				//obj->compute_equidepth_break_points(timeseries,del);
-	//				trained_break_points = true;
-	//			}
-	//			sax_str = obj->timeseries2SAX(timeseries,del);
-	//
-	//
-	//			outfile << label << " " << sax_str << '\n';
-	//		}
-	//		myfile.close();
-	//		outfile.close();
-	//	} else {
-	//		std::cout << "Invalid File Input." << std::endl;
-	//	}
-
-	std::ifstream test_myfile (test_input);
-	std::ofstream test_outfile (test_output);
-
-	if (test_myfile.is_open() && test_outfile.is_open()){
-		while (getline (test_myfile, line)){
-			pos = line.find(del);
-			label = line.substr(0, pos);
-			line.erase(0, pos + del.length());
-			sax_str = obj->timeseries2SAX(line,del);
-			test_outfile << label << " " << sax_str << '\n';
+		if (test_myfile.is_open() && test_outfile.is_open()){
+			while (getline (test_myfile, line)){
+				pos = line.find(del);
+				label = line.substr(0, pos);
+				line.erase(0, pos + del.length());
+				sax_str = obj->timeseries2SAX(line,del);
+				test_outfile << label << " " << sax_str << '\n';
+			}
+			test_myfile.close();
+			test_outfile.close();
+		} else {
+			if (!test_myfile.is_open())	std::cout << "Invalid Timeseries Data Input." << std::endl;
+			if (!test_outfile.is_open())	std::cout << "Invalid output for SAX." << std::endl;
+			return false;
 		}
-		test_myfile.close();
-		test_outfile.close();
-	} else {
-		if (!test_myfile.is_open())	std::cout << "Invalid Timeseries Data Input." << std::endl;
-		if (!test_outfile.is_open())	std::cout << "Invalid output for SAX." << std::endl;
-		return false;
 	}
-
-	//	if (test_myfile.is_open() && test_outfile.is_open()){
-	//		while (test_myfile.getline (line, 100000)){
-	//			char *timeseries = std::strchr(line,*del)+1;
-	//
-	//			char *label = (char*) malloc(timeseries - line);
-	//			std::strncpy(label,line,timeseries-line-1);
-	//			label[timeseries - line-1] = '\0';
-	//
-	//
-	//			char *sax_str;
-	//			sax_str = obj->timeseries2SAX(timeseries,del);
-	//
-	//
-	//			test_outfile << label << " " << sax_str << '\n';
-	//		}
-	//		test_myfile.close();
-	//		test_outfile.close();
-	//	} else {
-	//		std::cout << "Invalid File Input." << std::endl;
-	//	}
 }
