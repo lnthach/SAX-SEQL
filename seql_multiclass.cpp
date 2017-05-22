@@ -239,48 +239,7 @@ private:
 				current_preds[item] = positive_label;
 			}
 
-			// Keep predicted and true score.
-			//scores.push_back(pair<double, int>(predicted_score, y));
-
-			// Transform the predicted_score which is a real number, into a probability,
-			// using the logistic transformation: exp^{predicted_score} / 1 + exp^{predicted_score} = 1 / 1 + e^{-predicted_score}.
-
-
-			//			if (verbose == 1) {
-			//				std::cout << y << " " << predicted_score << " " << predicted_prob << std::endl;
-			//			} else if (verbose == 2) {
-			//				std::cout << y << " " << predicted_score << " " << predicted_prob <<  " " << sequences[item] << std::endl;
-			//			} else if (verbose == 4) {
-			//				std::cout << "<instance>" << std::endl;
-			//				std::cout << y << " " << predicted_score << " " << predicted_prob << " " << sequences[item] << std::endl;
-			//				seql.printRules (std::cout);
-			//				std::cout << "</instance>" << std::endl;
-			//			} else if (verbose == 5) {
-			//				std::cout << y << " ";
-			//				seql.printIds (std::cout);
-			//			}
-
-			//			all++;
-			//			if (predicted_score > 0) {
-			//				if(y > 0) correct++;
-			//				//if(y > 0) res_a++; else res_b++;
-			//			} else {
-			//				if(y < 0) correct++;
-			//				//if(y > 0) res_c++; else res_d++;
-			//			}
 		}
-
-		// Sort the scores ascendingly by the predicted score.
-		//sort(scores.begin(), scores.end());
-		//double error = 1.0 - 1.0*correct / all;
-
-		//if(std::isnan(error)){
-		//	cout << "FATAL ERROR: NAN" << endl;
-		//	cout << "correct/all=" << correct << "/" << all << endl;
-
-		//}
-		//return error;
-
 	}
 
 public:
@@ -413,49 +372,9 @@ public:
 		cout << "Test: " << test_data << endl;
 		cout << "Test size: " << test_size << endl;
 		cout << "Number of classes: " << label_set.size() << endl;
-		//cout << train_sequences[0] << endl;
-		//cout << test_sequences[0] << endl;
-		// READ DATA
-		//		char *columns[5];
-		//		string doc;
-
-		//vector<string> sax;
-		//		std::string test_line;
-		//		std::istream *test_is = new std::ifstream (sax_data);
-		//		while (std::getline (*test_is, test_line)) {
-		//			//sax.push_back(test_line);
-		//
-		//
-		//			char * line = new char[test_line.size() + 1];
-		//			std::copy(test_line.begin(), test_line.end(), line);
-		//			line[test_line.size()] = '\0'; // don't forget the terminating 0
-		//
-		//			if (2 != tokenize (line, "\t ", columns, 2)) {
-		//				std::cerr << "FATAL: Format Error: " << line << std::endl;
-		//
-		//			}
-		//			// Prepare class. _y is +1/-1.
-		//			double _y = atof (columns[0]);
-		//			labels.push_back (_y);
-		//			label_set.insert(_y);
-		//
-		//
-		//
-		//			// Prepare doc. Assumes column[1] is the original text, e.g. no bracketing of original doc.
-		//			doc.assign(columns[1]);
-		//			sequences.push_back(doc);
-		//		}
-		//		delete test_is;
 
 	}
 
-	//	int compute_data_size(){
-	//		std::ifstream inFile(input_data);
-	//		int count = std::count(std::istreambuf_iterator<char>(inFile),
-	//				std::istreambuf_iterator<char>(), '\n');
-	//		inFile.close();
-	//		return count;
-	//	}
 	void undersampling(vector<double> & selection, double positive_label){
 		int positive_count = 0;
 		// add positive sample first
