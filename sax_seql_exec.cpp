@@ -2,7 +2,9 @@
  * sax_seql_exec.cpp
  *	For binary classification only.
  *  Created on: 9 May 2017
- *      Author: thachln
+ *      Author: Thach Le Nguyen
+ *
+ *
  */
 
 
@@ -235,6 +237,83 @@ private:
 		return error;
 	}
 
+	void classify(vector<string> &test_samples, vector<double> &test_true_labels, vector<double> &scores, double threshold){
+		unsigned int verbose = 0;
+		SEQLClassifier seql;
+
+		if (verbose >= 3) seql.setRule (true);
+		//cout << model_bin << "****" << endl;
+		if (! seql.open (model_bin.c_str(), threshold)) {
+			std::cerr << " " << model_bin << " No such file or directory" << std::endl;
+		}
+
+		// Predicted and true scores for all docs.
+		//vector<pair<double, int> > scores;
+
+		unsigned int all = 0;
+		unsigned int correct = 0;
+
+		seql.load_mytrie(model_predictors.c_str(), threshold);
+
+		for (unsigned int item = 0; item < test_samples.size(); ++item){
+			//int item = test_fold[ic];
+			//int y = int (test_true_labels[item]);
+			//double predicted_score = seql.classify (sequences[item].c_str(), token_type);
+			scores[item] += seql.classify_with_mytrie(test_samples[item].c_str(), max_distance);
+		}
+	}
+
+	void reset(){
+		train_sequences.clear();
+		test_sequences.clear();
+		train_labels.clear();
+		test_labels.clear();
+		train_size = 0;
+		test_size = 0;
+	}
+
+	void init(string _train_data, string _test_data, string _work_dir, int sax_N, int sax_w, int sax_a){
+
+		work_dir = _work_dir;
+		train_data = _train_data;
+		test_data = _test_data;
+
+
+
+		sax_train = work_dir + "/sax.train";
+		sax_test = work_dir + "/sax.test";
+		model = work_dir + "/seql.model";
+		model_bin = work_dir + "/seql.model.bin";
+		model_predictors = work_dir + "/seql.model.predictors";
+
+		//data_size = compute_data_size();
+		token_type = 1;
+		max_distance = 1.0;
+
+		window_size = sax_N;
+		word_length = sax_w;
+		alphabet_size = sax_a;
+		clock_t start = clock();
+		convert_numeric_data_to_sax(train_data,sax_train,train_sequences,train_labels);
+		convert_numeric_data_to_sax(test_data,sax_test,test_sequences,test_labels);
+		cout << "SAX conversion time: " << double(clock() - start) / CLOCKS_PER_SEC << endl;
+
+		train_size = train_labels.size();
+		test_size = test_labels.size();
+
+
+
+
+	}
+
+	void report_data(){
+		cout << "Train: " << train_data << endl;
+		cout << "Train size: " << train_size << endl;
+		cout << "Test: " << test_data << endl;
+		cout << "Test size: " << test_size << endl;
+		cout << "Number of classes: " << label_set.size() << endl;
+	}
+
 
 public:
 	vector<int> stratified_k_folds(int sample_size,int k){
@@ -330,42 +409,14 @@ public:
 		return true;
 	}
 
+	SAXSEQL(){
 
+	}
 
 	SAXSEQL(string _train_data, string _test_data, string _work_dir, int sax_N, int sax_w, int sax_a){
 
-		work_dir = _work_dir;
-		train_data = _train_data;
-		test_data = _test_data;
-
-		window_size = sax_N;
-		word_length = sax_w;
-		alphabet_size = sax_a;
-
-		sax_train = work_dir + "/sax.train";
-		sax_test = work_dir + "/sax.test";
-		model = work_dir + "/seql.model";
-		model_bin = work_dir + "/seql.model.bin";
-		model_predictors = work_dir + "/seql.model.predictors";
-
-		//data_size = compute_data_size();
-		token_type = 1;
-		max_distance = 1.0;
-
-		clock_t start = clock();
-		convert_numeric_data_to_sax(train_data,sax_train,train_sequences,train_labels);
-		convert_numeric_data_to_sax(test_data,sax_test,test_sequences,test_labels);
-		cout << "SAX conversion time: " << double(clock() - start) / CLOCKS_PER_SEC << endl;
-
-		train_size = train_labels.size();
-		test_size = test_labels.size();
-
-
-		cout << "Train: " << train_data << endl;
-		cout << "Train size: " << train_size << endl;
-		cout << "Test: " << test_data << endl;
-		cout << "Test size: " << test_size << endl;
-		cout << "Number of classes: " << label_set.size() << endl;
+		init(_train_data, _test_data,  _work_dir,  sax_N,  sax_w,  sax_a);
+		report_data();
 		//cout << train_sequences[0] << endl;
 		//cout << test_sequences[0] << endl;
 		// READ DATA
@@ -401,6 +452,8 @@ public:
 		//		delete test_is;
 
 	}
+
+
 
 	//	int compute_data_size(){
 	//		std::ifstream inFile(input_data);
@@ -621,6 +674,76 @@ public:
 
 	}
 
+	double run_sax_seql_with_ensemble(string _train_data, string _test_data, string _work_dir, int min_ws, int max_ws, int wl, int as){
+		double classification_starttime,learn_starttime,tmp_learn_time, learn_time, tmp_classification_time, classification_time, max_time = 0;
+		vector<double> scores;
+
+
+		for (int ws = min_ws; ws < max_ws; ws += sqrt(4*max_ws)){
+			double threshold = 0;
+
+			reset();
+			init(_train_data,_test_data,_work_dir,ws, wl, as);
+
+			if (ws == min_ws){
+				scores.resize(test_size);
+				std::fill(scores.begin(), scores.end(), 0.0);
+			}
+
+			// ******************************LEARNING PHASE******************************
+			learn_starttime = clock();
+			learn(train_sequences, train_labels);
+			tmp_learn_time = double(clock() - learn_starttime) / CLOCKS_PER_SEC;
+			// ******************************MKMODEL PHASE******************************
+			if (mkmodel(model,model_bin,model_predictors) < 0){
+				cout << "Fail to prepare model file.\n";
+			}
+			// ******************************TUNE THRESHOLD******************************
+			// threshold = tune_threshold(positive_label);
+			// ******************************CLASSIFICATION PHASE******************************
+			classification_starttime = clock();
+			classify(test_sequences,test_labels,scores,threshold);
+			tmp_classification_time = double(clock() - classification_starttime) / CLOCKS_PER_SEC;
+		}
+
+		int correct = 0;
+		for (int i = 0; i < test_size;i++){
+			if (scores[i] > 0){
+				if (test_labels[i] > 0){
+					correct++;
+				}
+			} else {
+				if (test_labels[i] < 0){
+					correct++;
+				}
+			}
+		}
+		cout << "Ensemble: Test accuracy with default threshold: " << 1.0 - 1.0*correct/test_size << endl;
+	}
+
+	void run_sax_seql(){
+		double classification_starttime,learn_starttime,tmp_learn_time, learn_time, tmp_classification_time, classification_time, max_time = 0;
+		double threshold = 0.0;
+		// ******************************LEARNING PHASE******************************
+		learn_starttime = clock();
+		learn(train_sequences, train_labels);
+		tmp_learn_time = double(clock() - learn_starttime) / CLOCKS_PER_SEC;
+		// ******************************MKMODEL PHASE******************************
+		if (mkmodel(model,model_bin,model_predictors) < 0){
+			cout << "Fail to prepare model file.\n";
+		}
+		// ******************************TUNE THRESHOLD******************************
+		threshold = tune_threshold(train_sequences, train_labels);
+		// ******************************CLASSIFICATION PHASE******************************
+		classification_starttime = clock();
+		double error = classify(test_sequences,test_labels,threshold);
+		tmp_classification_time = double(clock() - classification_starttime) / CLOCKS_PER_SEC;
+
+		cout << "Training time: " << tmp_learn_time << endl;
+		cout << "Classification time: " << tmp_classification_time << endl;
+		cout << "Classification error: " << error << endl;
+	}
+
 
 
 };
@@ -630,21 +753,50 @@ public:
 int main(int argc, char **argv){
 
 	cout << "Hello World!" << endl;
-	string train_data = string(argv[1]);
-	string test_data = string(argv[2]);
-	string work_dir = string(argv[3]);
-	int window_size = atoi(argv[4]);
-	int word_length = atoi(argv[5]);
-	int alphabet_size = atoi(argv[6]);
-	//srand (0);
-	//int N = 10;
+	string train_data;
+	string test_data;
+	string work_dir;
+	int min_window_size;
+	int max_window_size;
+	int word_length;
+	int alphabet_size;
 
-	//double min_error = 1.0;
-	//int best_config[3] = {0,0,0};
-	SAXSEQL seql_obj(train_data,test_data, work_dir, window_size, word_length, alphabet_size);
+	int opt;
+	while ((opt = getopt(argc, argv, "t:T:d:n:N:w:a:")) != -1) {
+		switch(opt) {
+		case 't':
+			train_data = string (optarg);
+			break;
+		case 'T':
+			test_data = string (optarg);
+			break;
+		case 'd':
+			work_dir = string(optarg);
+			break;
+		case 'n':
+			min_window_size = atoi(optarg);
+			break;
+		case 'N':
+			max_window_size = atoi(optarg);
+			break;
+		case 'w':
+			word_length = atoi(optarg);
+			break;
+		case 'a':
+			alphabet_size = atoi(optarg);
+			break;
+		default:
+			std::cout << "Usage: " << argv[0] << std::endl;
+			return -1;
+		}
+	}
 
-	cout << "N=" << window_size << ",w=" << word_length << ",a=" << alphabet_size << "," << endl;
-	seql_obj.run_sax_seql_with_k_folds();
+	SAXSEQL seql_obj(train_data,test_data, work_dir, min_window_size, word_length, alphabet_size);
+	cout << "N=" << min_window_size << ",w=" << word_length << ",a=" << alphabet_size << "," << endl;
+	seql_obj.run_sax_seql();
+
+	//SAXSEQL seql_obj;
+	//seql_obj.run_sax_seql_with_ensemble(train_data,test_data, work_dir, min_window_size, max_window_size, word_length, alphabet_size);
 
 }
 

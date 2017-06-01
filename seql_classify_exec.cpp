@@ -110,7 +110,7 @@ int main (int argc, char **argv)
     unsigned int res_d = 0;
 
 
-    seql.load_mytrie(predictor.c_str());
+    seql.load_mytrie(predictor.c_str(),threshold);
 
     //SAX sax_converter(sax_window_size,sax_word_length,sax_alphabet_size);
 

@@ -77,6 +77,7 @@ Default values for parameters:
 
 ## Example
 
+Binary data:
 ```
 ./sax_convert -n 0 -s 1 -N 60 -w 16 -a 4  -i data/Coffee_TRAIN -o sax.train -I data/Coffee_TEST -O sax.test
 ./seql_learn -n 1 -v 1 -A 4 -d 1 sax.train seql.model
@@ -95,6 +96,8 @@ and use the best theshold for classifying the test set:
 ```
 ./seql_classify -n 1 -v 0 -t 0.0746284 -p seql.predictor -d 1 sax.test seql.model.bin
 ```
+Multiclass data:
+
 
 
 

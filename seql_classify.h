@@ -64,7 +64,7 @@ public:
 
     bool open (const char *file, double threshold);
 
-    bool load_mytrie (const char *file);
+    bool load_mytrie (const char *file, double threshold);
 
     // Compute the area under the ROC curve.
     double calcROC( std::vector< std::pair<double, int> >& forROC );

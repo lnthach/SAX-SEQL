@@ -142,8 +142,9 @@ bool SEQLClassifier::open (const char *file, double threshold)
 	return true;
 }
 
-bool SEQLClassifier::load_mytrie (const char *file){
+bool SEQLClassifier::load_mytrie (const char *file, double threshold){
 	trie.load_seql_trie(file);
+	bias = -threshold;
 }
 
 // Compute the area under the ROC curve.

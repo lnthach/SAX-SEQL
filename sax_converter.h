@@ -324,52 +324,7 @@ public:
 
 	}
 
-	/*
-	void compute_equidepth_break_points(char* timeseries, char* delimiter){
-		char *stre = timeseries + strlen (timeseries);
-		char *dele = delimiter + strlen (delimiter);
-		int size = 1;
-		double swap;
-		std::vector<double> numeric_ts;
-		while (size < MAX) {
-			//std::cout << atof(timeseries) << std::endl;
-			char *n = std::find_first_of (timeseries, stre, delimiter, dele);
-			//std::cout << atof(timeseries) << std::endl;
-			numeric_ts.push_back(atof(timeseries));
-			++size;
-			if (n == stre) break;
-			timeseries = n + 1;
-		}
-		// ??
-		if (window_size < 0){
-			window_size = numeric_ts.size();
-		}
 
-		break_points = (double*)malloc (sizeof(double)*(alphabet_size-1));
-
-		for (int i = 0; i < (numeric_ts.size() - 1); i++){
-			for (int j = 0; j < numeric_ts.size() - i - 1; j++){
-				if (numeric_ts[j] > numeric_ts[j+1]){
-					swap = numeric_ts[j];
-					numeric_ts[j] = numeric_ts[j + 1];
-					numeric_ts[j+1] = swap;
-				}
-			}
-		}
-		//for (int i = 0; i < numeric_ts.size(); i++){
-		//	std::cout << numeric_ts[i] << " ";
-		//}
-		std::cout << std::endl;
-		double step = numeric_ts.size()*1.0/alphabet_size;
-		double pos = step;
-		int a = 0;
-		while (pos < numeric_ts.size()-1){
-			break_points[a] = (numeric_ts[int(pos)] + numeric_ts[int(pos) + 1])/2;
-			a++;
-			pos += step;
-		}
-	}
-	 */
 	void compute_break_points(){
 		break_points = (double*)malloc (sizeof(double)*(alphabet_size-1));
 		//double bps[alphabet_size - 1];
@@ -441,11 +396,11 @@ public:
 			std::copy(bps,bps + alphabet_size - 1, break_points);
 			break;}
 		case 17:{
-			double bps[16] = {-1.56, -1.19, -0.93, -0.72, -0.54, -0.38, -0.22, -0.07, 0.07, 0.22, 0.38, 0.54, 0.72, 0.93, 1.19, 1.56};
+			double bps[16] = { -1.56472647136, -1.18683143276, -0.928899491647, -0.721522283982, -0.541395085129, -0.377391943829, -0.22300783094, -0.0737912738083, 0.0737912738083, 0.22300783094, 0.377391943829, 0.541395085129, 0.721522283982, 0.928899491647, 1.18683143276, 1.56472647136 };
 			std::copy(bps,bps + alphabet_size - 1, break_points);
 			break;}
 		case 18:{
-			double bps[17] = {-1.59, -1.22, -0.97, -0.76, -0.59, -0.43, -0.28, -0.14, 0.0, 0.14, 0.28, 0.43, 0.59, 0.76, 0.97, 1.22, 1.59};
+			double bps[17] = { -1.59321881802, -1.22064034885, -0.967421566102, -0.764709673786, -0.58945579785, -0.430727299295, -0.282216147063, -0.139710298882, 0.0, 0.139710298882, 0.282216147063, 0.430727299295, 0.58945579785, 0.764709673786, 0.967421566102, 1.22064034885, 1.59321881802 };
 			std::copy(bps,bps + alphabet_size - 1, break_points);
 			break;}
 		case 19:{
