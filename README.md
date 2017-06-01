@@ -96,7 +96,11 @@ and use the best theshold for classifying the test set:
 ```
 ./seql_classify -n 1 -v 0 -t 0.0746284 -p seql.predictor -d 1 sax.test seql.model.bin
 ```
-Multiclass data:
+
+Or you can do all the above steps in one line of command:
+```
+./sax_seql -t data/Coffee_TRAIN -T data/Coffee_TEST -d [directory for output] -n 60 -w 16 -a 4
+```
 
 
 
