@@ -31,13 +31,14 @@ make
 2. Train using ./seql_learn
   Usage:
 ```
-./seql_learn    [-o objective_function] [-m minsup] [-l minpat] [-L maxpat] [-g maxgap] [-r traversal_strategy ]
+./seql_learn    [-o objective_function] [-A alphabet_size] [-m minsup] [-l minpat] [-L maxpat] [-g maxgap] [-r traversal_strategy ]
                 [-T #round] [-n token_type] [-c convergence_threshold] [-C regularizer_value] [-a l1_vs_l2_regularizer_weight]
                 [-v verbosity] train_file model_file
 
 Default values for parameters:
     [-o objective: 0 or 2] Objective function. Choice between logistic regression (-o 0) and squared-hinge support vector ma-
      chines (-o 2). By default set to logistic regression.
+	[-A alphabet_size] Should be consistent with the input for sax_convert.
     [-g maxgap >= 0] Maximum number of consecutive gaps or wildcards allowed in a feature, e.g., a**b,
      is a feature of size 4 with any 2 characters from the input alphabet in the middle. By default
      set to 0.
@@ -75,9 +76,14 @@ Default values for parameters:
 ./seql_classify [-n token_type: 0 word tokens, 1 char tokens; by default set to 1] [-t classif_threshold: default 0] [-v verbosity level: default 0] test_file binary_model_file
 ```
 
+5. For multiclass data:
+```
+./seql_multiclass [train data] [test data] [output directory] [window size] [word length] [alphabet size] 
+```
+
 ## Example
 
-Binary data:
+For binary data:
 ```
 ./sax_convert -n 0 -s 1 -N 60 -w 16 -a 4  -i data/Coffee_TRAIN -o sax.train -I data/Coffee_TEST -O sax.test
 ./seql_learn -n 1 -v 1 -A 4 -d 1 sax.train seql.model
@@ -97,11 +103,10 @@ and use the best theshold for classifying the test set:
 ./seql_classify -n 1 -v 0 -t 0.0746284 -p seql.predictor -d 1 sax.test seql.model.bin
 ```
 
-Or you can do all the above steps in one line of command:
+Or we can do all the above steps in one line of command:
 ```
 ./sax_seql -t data/Coffee_TRAIN -T data/Coffee_TEST -d [directory for output] -n 60 -w 16 -a 4
 ```
-
 
 
 
