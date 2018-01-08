@@ -1,10 +1,13 @@
 /*
- * seql_mkmodel.h
+ * Authors: Georgiana Ifrim (georgiana.ifrim@gmail.com)
+ *		    Thach Le Nguyen (thach.lenguyen@insight-centre.org)
  *
- *  Created on: 6 Jul 2016
- *      Author: thachln
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation.
+ *
  */
-
 
 
 #include <cmath>

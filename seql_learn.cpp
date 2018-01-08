@@ -1,28 +1,9 @@
 /*
- * Author: Georgiana Ifrim (georgiana.ifrim@gmail.com)
- * SEQL: Sequence Learner
- * This library trains ElasticNet-regularized Logistic Regression and L2-loss (squared-hinge-loss) SVM for Classifying Sequences in the feature space of all possible
- * subsequences in the given training set.
- * Elastic Net regularizer: alpha * L1 + (1 - alpha) * L2, which combines L1 and L2 penalty effects. L1 influences the sparsity of the model, L2 corrects potentially high
- * coeficients resulting due to feature correlation (see Regularization Paths for Generalized Linear Models via Coordinate Descent, by Friedman et al, 2010).
+ * Authors: Georgiana Ifrim (georgiana.ifrim@gmail.com)
+ *		    Thach Le Nguyen (thach.lenguyen@insight-centre.org)
  *
- * The user can influence the outcome classification model by specifying the following parameters:
- * [-o objective] (objective function; choice between logistic regression, squared-hinge-svm and squared error. By default: logistic regression.)
- * [-T maxitr] (number of optimization iterations; by default this is set using a convergence threshold on the aggregated change in score predictions.)
- * [-l minpat] (constraint on the min length of any feature)
- * [-L maxpat] (constraint on the max length of any feature)
- * [-m minsup] (constraint on the min support of any feature, i.e. number of sequences containing the feature)
- * [-g maxgap] (number of total wildcards allowed in a feature, e.g. a**b, is a feature of size 4 with any 2 characters in the middle)
- * [-G maxcongap] (number of consecutive wildcards allowed in a feature, e.g. a**b, is a feature of size 4 with any 2 characters in the middle)
- * [-n token_type] (word or character-level token to allow sequences such as 'ab cd ab' and 'abcdab')
- * [-C regularizer_value] value of the regularization parameter, the higher value means more regularization
- * [-a alpha] (weight on L1 vs L2 regularizer, alpha=0.5 means equal weight for l1 and l2)
- * [-r traversal_strategy] (BFS or DFS traversal of the search space), BFS by default
- * [-c convergence_threshold] (stopping threshold for optimisation iterations based on change in aggregated score predictions)
- * [-v verbosity] (amount of printed detail about the model)
  *
- * License:
- * This library is free software; you can redistribute it and/or
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation.
  *

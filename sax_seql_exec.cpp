@@ -1,12 +1,12 @@
 /*
- * sax_seql_exec.cpp
- *	For binary classification only.
- *  Created on: 9 May 2017
- *      Author: Thach Le Nguyen
+ * Authors: Thach Le Nguyen (thach.lenguyen@insight-centre.org)
  *
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation.
  *
  */
-
 
 
 #include "seql_learn.h"

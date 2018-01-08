@@ -1,8 +1,11 @@
 /*
- * sax_converter.h
+ * Authors: Thach Le Nguyen (thach.lenguyen@insight-centre.org)
  *
- *  Created on: 6 Jul 2016
- *      Author: thachln
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation.
+ *
  */
 
 #ifndef SAX_CONVERTER_H_

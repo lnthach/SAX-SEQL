@@ -100,7 +100,7 @@ Optionally one can tune the classification threshold on the training set, to min
 
 and use the best theshold for classifying the test set:
 ```
-./seql_classify -n 1 -v 0 -t 0.0746284 -p seql.predictor -d 1 sax.test seql.model.bin
+./seql_classify -n 1 -v 0 -t 0.0746284 -p seql.predictor -d 1 sax.test seql.model
 ```
 
 Or we can do all the above steps in one line of command:
