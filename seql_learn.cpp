@@ -1010,8 +1010,8 @@ void SeqLearner::generate_alphabet(){
 double SeqLearner::compute_xi(double d){
 
 	if (d <= max_distance){
-		return 1.0;
-//		return 1.0 - d/(max_distance + 1);
+//		return 1.0;
+		return 1.0 - d/(max_distance + 1);
 	}
 	return 0.0;
 }
