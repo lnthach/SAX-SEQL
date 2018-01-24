@@ -37,11 +37,14 @@ private:
 	int MAX;
 	int numerosity_reduction;
 
+	// turn this on to replicate the reported results on github
+	bool fixed_parameters_for_testing = false;
+
 public:
 	// numerosity reduction strategy
-	static const int NONE_NR = 0;
-	static const int BACK2BACK_NR = 1;
-	static const int UNIQUE_SET_NR = 2;
+	static const int NONE_NR = 0; // no reduction
+	static const int BACK2BACK_NR = 1; // remove consecutive duplications
+	static const int UNIQUE_SET_NR = 2; // remove all duplications
 
 	static const int TEST_NORMALIZE = 1;
 
@@ -433,7 +436,7 @@ public:
 
 	bool isNearlyEqualToZero(double x)
 	{
-		const double epsilon = 0; /* some small number such as 1e-5 */;
+		const double epsilon = 0; /* very small number such as 1e-10 */;
 		return std::abs(x) <= epsilon;
 	}
 
@@ -443,6 +446,10 @@ public:
 		int ts_length = timeseries.size();
 		std::vector<std::string>  sax_seqc;
 		// sliding windows
+
+		if (fixed_parameters_for_testing) {
+			window_size = int(0.2*ts_length);
+		}
 
 		for (int cur_pos = 0; cur_pos < ts_length - window_size + 1; cur_pos += step_size){
 			//std::cout << ts_length << std::endl;
