@@ -1,4 +1,4 @@
-Dataset,error,SAX,TotalLearn,MaxLearn,TotalTest,MaxTest
+Dataset,error,SAX_time,TotalLearn_time,MaxLearn_time,TotalTest_time,MaxTest_time
 Coffee,0.071,0.033,1.992,1.992,0.012,0.012
 Earthquakes,0.202,0.733,55.292,55.292,0.704,0.704
 ECG200,0.22,0.024,9.836,9.836,0.034,0.034
@@ -64,8 +64,6 @@ Meat,0.183,0.138,26.848,12.07,0.092,0.035
 MiddlePhalanxOutlineAgeGroup,0.253,0.042,37.776,15.292,0.343,0.128
 MiddlePhalanxOutlineCorrect,0.365,0.067,39.449,39.449,0.308,0.308
 MiddlePhalanxTW,0.391,0.042,41.193,11.387,0.482,0.118
-NonInvasiveFatalECG_Thorax1,0.391,9.544,41.193,11.387,0.482,0.118
-NonInvasiveFatalECG_Thorax2,0.391,9.524,41.193,11.387,0.482,0.118
 PhalangesOutlinesCorrect,0.28,0.223,571.319,571.319,0.97,0.97
 Phoneme,0.771,11.996,1379.483,62.931,63.756,3.19
 Plane,0.01,0.04,28.109,4.961,0.165,0.027
