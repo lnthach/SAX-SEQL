@@ -1,8 +1,6 @@
 /*
- * Author: Georgiana Ifrim (georgiana.ifrim@gmail.com)
- *
- * This library uses a model stored in a trie
- * for fast classification of a given test set.
+ * Authors: Georgiana Ifrim (georgiana.ifrim@gmail.com)
+ *		    Thach Le Nguyen (thach.lenguyen@insight-centre.org)
  *
  * A customized (tuned) classification threshold can be provided as input to the classifier.
  * The program simply applies a suffix tree model to the test documents for predicting classification labels.

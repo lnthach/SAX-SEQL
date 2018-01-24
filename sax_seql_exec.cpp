@@ -263,6 +263,58 @@ private:
 		}
 	}
 
+	double classify(double positive_label, vector<double> &current_preds,vector<double> &current_scores, double threshold){
+		unsigned int verbose = 0;
+		//double threshold = 0; // By default zero threshold = zero bias.
+
+
+		// Profiling variables.
+		// struct timeval t;
+		//		struct timeval t_origin;
+		//		gettimeofday(&t_origin, NULL);
+
+		SEQLClassifier seql;
+
+		if (verbose >= 3) seql.setRule (true);
+		//cout << model_bin << "****" << endl;
+		if (! seql.open (model_bin.c_str(), threshold)) {
+			std::cerr << " " << model_bin << " No such file or directory" << std::endl;
+			return 1.0;
+		}
+
+		// Predicted and true scores for all docs.
+		//vector<pair<double, int> > scores;
+
+		unsigned int all = 0;
+		unsigned int correct = 0;
+
+		seql.load_mytrie(model_predictors.c_str(), threshold);
+
+		for (unsigned int item = 0; item < test_size;++item){
+			//int item = test_fold[ic];
+			//int y = int (tmp_labels[item]);
+			//double predicted_score = seql.classify (sequences[item].c_str(), token_type);
+			double predicted_score = seql.classify_with_mytrie(test_sequences[item].c_str(), max_distance);
+
+			double predicted_prob;
+			if (predicted_score < -8000) {
+				predicted_prob = 0;
+			} else {
+				predicted_prob = 1.0 / (1.0 + exp(-predicted_score));
+			}
+
+			//if (predicted_score > current_scores[item]){
+			//	current_scores[item] = predicted_score;
+			//	current_preds[item] = positive_label;
+			//}
+			if (predicted_prob > current_scores[item]){
+				current_scores[item] = predicted_prob;
+				current_preds[item] = positive_label;
+			}
+
+		}
+	}
+
 	void reset(){
 		train_sequences.clear();
 		test_sequences.clear();
@@ -270,6 +322,28 @@ private:
 		test_labels.clear();
 		train_size = 0;
 		test_size = 0;
+	}
+
+	// SEQL only works with binary data of class +1 and -1
+	void change_binary_labels(){
+		if (label_set.size() == 2){
+			for (int i = 0; i < train_labels.size();i++){
+				if (train_labels[i] == label_set[0]){
+					train_labels[i] = 1;
+				} else {
+					train_labels[i] = -1;
+				}
+			}
+			for (int i = 0; i < test_labels.size();i++){
+				if (test_labels[i] == label_set[0]){
+					test_labels[i] = 1;
+				} else {
+					test_labels[i] = -1;
+				}
+			}
+			label_set[0] = 1;
+			label_set[1] = -1;
+		}
 	}
 
 	void init(string _train_data, string _test_data, string _work_dir, int sax_N, int sax_w, int sax_a){
@@ -288,7 +362,7 @@ private:
 
 		//data_size = compute_data_size();
 		token_type = 1;
-		max_distance = 1.0;
+		max_distance = 0.0;
 
 		window_size = sax_N;
 		word_length = sax_w;
@@ -296,6 +370,7 @@ private:
 		clock_t start = clock();
 		convert_numeric_data_to_sax(train_data,sax_train,train_sequences,train_labels);
 		convert_numeric_data_to_sax(test_data,sax_test,test_sequences,test_labels);
+		change_binary_labels();
 		cout << "SAX conversion time: " << double(clock() - start) / CLOCKS_PER_SEC << endl;
 
 		train_size = train_labels.size();
@@ -364,7 +439,7 @@ public:
 	bool convert_numeric_data_to_sax(string input_data,string output_sax, vector<string> &sequences, vector<double> &labels){
 		SAX sax_converter(window_size,word_length,alphabet_size,2);
 
-		string del = " ";
+		string del = ",";
 
 		std::ifstream myfile (input_data);
 		std::ofstream outfile (output_sax);
@@ -722,6 +797,13 @@ public:
 	}
 
 	void run_sax_seql(){
+		if (label_set.size() > 2){
+			multiclass_seql();
+		} else {
+			run_bin_sax_seql();
+		}
+	}
+	void run_bin_sax_seql(){
 		double classification_starttime,learn_starttime,tmp_learn_time, learn_time, tmp_classification_time, classification_time, max_time = 0;
 		double threshold = 0.0;
 		// ******************************LEARNING PHASE******************************
@@ -744,6 +826,83 @@ public:
 		cout << "Classification error: " << error << endl;
 	}
 
+	void multiclass_seql(){
+		clock_t learn_starttime, classification_starttime;
+		double total_learn_time, total_classify_time, tmp_learn_time, learn_time, tmp_classification_time, classification_time, max_time = 0;
+		total_learn_time = total_classify_time = 0;
+
+
+		std::vector<double> predicted_labels(test_size);
+		std::vector<double> predicted_scores(test_size);
+		for (int i = 0; i < test_size; ++i){
+			predicted_labels[i] = 1.0;
+			predicted_scores[i] = -std::numeric_limits<double>::infinity();
+		}
+		for(auto positive_label : label_set) {
+			double threshold = 0;
+			std::vector<double> train_tmp_labels(train_size);
+			for (int i = 0; i < train_size; ++i){
+				if (train_labels[i] == positive_label){
+					train_tmp_labels[i] = 1.0;
+				} else {
+					train_tmp_labels[i] = -1.0;
+				}
+			}
+
+			std::vector<double> test_tmp_labels(test_size);
+			for (int i = 0; i < test_size; ++i){
+				if (test_labels[i] == positive_label){
+					test_tmp_labels[i] = 1.0;
+				} else {
+					test_tmp_labels[i] = -1.0;
+				}
+			}
+			//NOTE: remove later
+			model = model + "1";
+			model_predictors = model_predictors + "1";
+
+			// ******************************LEARNING PHASE******************************
+			learn_starttime = clock();
+			learn(train_sequences, train_tmp_labels);
+			tmp_learn_time = double(clock() - learn_starttime) / CLOCKS_PER_SEC;
+			total_learn_time += tmp_learn_time;
+			// ******************************MKMODEL PHASE******************************
+			if (mkmodel(model,model_bin,model_predictors) < 0){
+				cout << "Fail to prepare model file.\n";
+			}
+			// ******************************TUNE THRESHOLD******************************
+			//threshold = tune_threshold(positive_label);
+			// ******************************CLASSIFICATION PHASE******************************
+			classification_starttime = clock();
+			classify(positive_label,predicted_labels,predicted_scores,threshold);
+			tmp_classification_time = double(clock() - classification_starttime) / CLOCKS_PER_SEC;
+			total_classify_time += tmp_classification_time;
+
+
+			// only keep runtime of the most expensive
+			if (tmp_learn_time + tmp_classification_time > max_time){
+				learn_time = tmp_learn_time;
+				classification_time = tmp_classification_time;
+				max_time = tmp_learn_time + tmp_classification_time;
+			}
+
+
+		}
+
+		cout << "(Longest) learning time: " << learn_time << endl;
+		cout << "Total learning time: " << total_learn_time << endl;
+		cout << "(Longest) classifying time: " << classification_time << endl;
+		cout << "Total classifying time: " << total_classify_time << endl;
+
+		int correct = 0;
+		for (int i = 0; i < test_size; ++i){
+			if (test_labels[i] == predicted_labels[i]){
+				correct++;
+			}
+		}
+		cout << "Classification error: " << 1.0 - correct*1.0/test_size << endl;
+	}
+
 
 
 };
@@ -752,7 +911,7 @@ public:
 
 int main(int argc, char **argv){
 
-	cout << "Hello World!" << endl;
+
 	string train_data;
 	string test_data;
 	string work_dir;
@@ -792,7 +951,7 @@ int main(int argc, char **argv){
 	}
 
 	SAXSEQL seql_obj(train_data,test_data, work_dir, min_window_size, word_length, alphabet_size);
-	cout << "N=" << min_window_size << ",w=" << word_length << ",a=" << alphabet_size << "," << endl;
+	//cout << "N=" << min_window_size << ",w=" << word_length << ",a=" << alphabet_size << "," << endl;
 	seql_obj.run_sax_seql();
 
 	//SAXSEQL seql_obj;
