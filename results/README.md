@@ -2,11 +2,15 @@
 
 Linux PC with Intel Core i7-4790 Processor (Quad Core HT, 3.60GHz), 16GB 1600 MHz memory and 256 Gb SSD storage.
 
-## Description
+## Description 
+
+# SAX-SEQL
+
+Files: sax-vfseql.csv, sax-vseql.csv
 
 Dataset: name of the dataset.
 
-Error: Classification error by SAX-VFSEQL.
+Error: Classification error by SAX-VFSEQL/SAX-VSEQL.
 
 SAX_time: Time (in seconds) to convert numeric time series (both training and test set) to SAX representation.
 
@@ -18,3 +22,12 @@ TotalTest_time: Total time (in seconds) to test SEQL models (more than 1 model i
 
 MaxTest_time: Time (in seconds) to test a SEQL model on the test set. For 2-class dataset, it equals to TotalTest_time. For n-class dataset (n > 2), it is the longest time measured for each one-vs-all testing iteration.
 
+# BOSS VS
+
+File: bossvs.csv
+
+Dataset: name of the dataset.
+
+Error: Classification error.
+
+Runtime: Total runtime (SFA transformation + learn + test) in seconds.
