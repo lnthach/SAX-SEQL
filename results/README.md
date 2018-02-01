@@ -1,10 +1,15 @@
-## System Configuration
+# System Configuration
 
 Linux PC with Intel Core i7-4790 Processor (Quad Core HT, 3.60GHz), 16GB 1600 MHz memory and 256 Gb SSD storage.
 
-## Description 
+# Description 
 
-# SAX-SEQL
+## ICDE17
+File: icde17.txt
+
+Names of the datasets we tested for our ICDE17 paper. 
+
+## SAX-SEQL
 
 Files: sax-vfseql.csv, sax-vseql.csv
 
@@ -22,7 +27,7 @@ TotalTest_time: Total time (in seconds) to test SEQL models (more than 1 model i
 
 MaxTest_time: Time (in seconds) to test a SEQL model on the test set. For 2-class dataset, it equals to TotalTest_time. For n-class dataset (n > 2), it is the longest time measured for each one-vs-all testing iteration.
 
-# BOSS VS
+## BOSS VS
 
 File: bossvs.csv
 
