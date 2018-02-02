@@ -40,8 +40,8 @@ Runtime: Total runtime (SFA transformation + learn + test) in seconds.
 ## SAX-VSM
 
 We tested SAX-VSM with the following parameters (the same parameters we used for SAX-SEQL): 
-window size = 0.2 * length of time series
-word size = 16
+window size = 0.2 * length of time series,
+word size = 16,
 alphabet size = 4
 
 File: sax-vsm-fixed-params.csv
