@@ -8,7 +8,7 @@ Time Series Classification by Sequence Learning in All-Subsequence Space, ICDE 2
 
 ## SAX
 
-![alt text](images/sax_demo.png "SAX Transformation")
+<img src="images/sax_demo.png" width="200" height="100" />
 
 SAX is a transformation method to convert numeric vector to a symbolic representation, i.e. a sequence of symbols from a predefined alphabet *a*. SAX first computes the Piecewise Aggregate Approximation (PAA) of a time series and then transforms this approximation to a symbolic representation. 
 
